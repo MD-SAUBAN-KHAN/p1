@@ -1,0 +1,10 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  # You can name this anything, e.g., "prometheus-service-access"
+  name: prometheus-service-access
+rules:
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["list"]
+

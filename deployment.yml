@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: static-webpage-deployment
+  namespace: p1
+  labels:
+    app: static-webpage
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: static-webpage
+  template:
+    metadata:
+      labels:
+        app: static-webpage
+    spec:
+      containers:
+        - name: static-webpage
+          image: mdsk2001/k8s-p1:v3
+          ports:
+            - containerPort: 8000
+

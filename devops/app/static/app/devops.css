@@ -1,0 +1,95 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+h1 {
+    margin: 20px 0;
+    color: #333;
+}
+
+#flowchart {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.box {
+    background-color: #fff;
+    border: 2px solid #ddd;
+    padding: 20px;
+    margin: 10px;
+    width: 250px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.box:hover {
+    transform: scale(1.05);
+}
+
+.arrow {
+    font-size: 24px;
+    margin: 0 20px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li span {
+    color: inherit; /* Use the inherited color instead of link blue */
+    text-decoration: none; /* Remove any underline */
+    cursor: default; /* Change the cursor to the default arrow */
+}
+
+ul li span:hover {
+    text-decoration: none; /* Ensure there's no underline on hover */
+    color: inherit; /* Keep the same color on hover */
+}
+
+@keyframes moveArrow {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(20px); }
+    100% { transform: translateX(0); }
+}
+
+.arrow {
+    font-size: 24px;
+    margin: 0 20px;
+    display: inline-block; /* Necessary for the animation */
+    animation: moveArrow 1s infinite; /* Apply animation */
+}
+
+@keyframes cycleColors {
+    0%   { color: #FF5733; }   /* Orange */
+    17%  { color: #00008B; }   /* Blue */
+    34%  { color: #005700; }   /* Green */
+    51%  { color: #C70039; }   /* Red */
+    68%  { color: #4B0082; }   /* Purple */
+    100% { color: #FF5733; }   /* Back to Orange */
+}
+
+h1 {
+    font-size: 36px;
+    animation: cycleColors 5s infinite; /* 5-second cycle through 10 colors */
+}
+
+
+

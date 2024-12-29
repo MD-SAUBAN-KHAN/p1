@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps Overview</title>
+    <link rel="stylesheet" href="static/app/devops.css">
+    <link rel="icon" href="{% static 'app/favicon.ico' %}" type="image/x-icon">
+</head>
+<body>
+    <div class="container">
+        <h1>DevOps and Related Concepts</h1>
+        <div id="flowchart">
+            <div class="box" id="devops">
+                <h2>DevOps</h2>
+                <p>DevOps is a set of practices that automates the processes between software development and IT teams.</p>
+            </div>
+            <div class="arrow">→</div>
+
+        <div class="box" id="tools">
+    <h2>DevOps Tools</h2>
+    <ul>
+        <li><span>Ansible</span></li>
+        <li><span>Terraform</span></li>
+        <li><span>Docker</span></li>
+        <li><span>Kubernetes</span></li>
+        <li><span>Observability</span></li>
+        <li><span>Shell Scripts</span></li>
+    </ul>
+</div>
+
+
+            <div class="arrow">→</div>
+
+            <div class="box" id="ansible">
+                <h2>Ansible</h2>
+                <p>Ansible is an open-source automation tool used for configuration management, application deployment, and orchestration.</p>
+            </div>
+            <div class="arrow">→</div>
+            
+            <div class="box" id="terraform">
+                <h2>Terraform</h2>
+                <p>Terraform is an open-source tool for building, changing, and versioning infrastructure safely and efficiently.</p>
+            </div>
+            <div class="arrow">→</div>
+
+            <div class="box" id="docker">
+                <h2>Docker</h2>
+                <p>Docker is a platform for building, running, and shipping applications in lightweight containers.</p>
+            </div>
+            <div class="arrow">→</div>
+
+            <div class="box" id="kubernetes">
+                <h2>Kubernetes</h2>
+                <p>Kubernetes (K8s) automates the deployment, scaling, and management of containerized applications.</p>
+            </div>
+            <div class="arrow">→</div>
+
+            <div class="box" id="observability">
+                <h2>Observability</h2>
+                <p>Observability refers to the ability to measure a system's internal states through logs, metrics, and traces.</p>
+            </div>
+            <div class="arrow">→</div>
+
+            <div class="box" id="shell">
+                <h2>Shell Scripts</h2>
+                <p>Shell scripting is a powerful way to automate repetitive tasks in Unix/Linux environments.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="static/app/devops.js"></script>
+
+
+</body>
+</html>
+

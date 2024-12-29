@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: static-webpage-monitor
+  namespace: p1
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: static-webpage
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+  namespaceSelector:
+    matchNames:
+      - p1
+
