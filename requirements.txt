@@ -1,3 +1,4 @@
 Django
 tzdata
 prometheus-client
+django-prometheus
