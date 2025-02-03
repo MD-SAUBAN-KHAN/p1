@@ -16,6 +16,7 @@ def devops_page(request):
     response = render(request, 'app/devops.html')
     duration = time() - start_time  # Calculate latency
 
+    # Record the latency only for this request
     REQUEST_LATENCY.labels(method=request.method, endpoint=request.path).observe(duration)
     page_visit_counter.inc()  # Increment counter here
 
@@ -23,12 +24,8 @@ def devops_page(request):
 
 def metrics(request):
     """Expose Prometheus metrics."""
-    start_time = time()  # Start measuring time for this request
+    # No need to measure latency again here, it's already done in the devops_page function
     response = HttpResponse(generate_latest(), content_type="text/plain; charset=utf-8")
-    duration = time() - start_time  # Calculate latency for this request
-
-    REQUEST_LATENCY.labels(method=request.method, endpoint=request.path).observe(duration)
-    page_visit_counter.inc()  # Increment counter
 
     return response
 
