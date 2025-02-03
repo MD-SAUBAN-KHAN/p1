@@ -29,6 +29,7 @@ COPY requirements.txt /webpage
 # Install the necessary build tools and Python packages
 RUN apt-get update && \
     apt-get install -y gcc libpq-dev python3-dev && \
+    pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt --break-system-packages
 
 # Stage 2: Final image (runtime)
@@ -39,6 +40,8 @@ WORKDIR /webpage
 # Copy only the essential files from the builder image to the runtime image
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
+
+# Copy Application code
 COPY devops /webpage
 
 # Expose the necessary port
