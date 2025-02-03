@@ -21,6 +21,7 @@ from django_prometheus import exports
 urlpatterns = [
     path('', views.devops_page, name='devops_page'),
     path('metrics/', exports.ExportToDjangoView),  # Correctly reference views.metrics
+    path('metrics/', exports.ExportToPrometheus),
 ]
 
 
