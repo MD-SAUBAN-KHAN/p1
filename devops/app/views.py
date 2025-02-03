@@ -1,34 +1,24 @@
 from django.shortcuts import render
-from prometheus_client import generate_latest, CollectorRegistry, Counter, Histogram
+from prometheus_client import generate_latest, Counter, Histogram
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 
-# Create a global registry and metrics
-registry = CollectorRegistry()
-
-# Define Prometheus metrics
-page_visit_counter = Counter(
-    'page_visits_total', 'Total number of page visits', registry=registry
-)
-REQUEST_LATENCY = Histogram(
-    'request_latency_seconds', 'Request latency in seconds', ['method', 'endpoint'], registry=registry
-)
-PAGE_LOAD_TIME = Histogram(
-    'page_load_time_seconds', 'Page load time in seconds', registry=registry
-)
+# Define Prometheus metrics using the default registry
+page_visit_counter = Counter('page_visits_total', 'Total number of page visits')
+REQUEST_LATENCY = Histogram('request_latency_seconds', 'Request latency in seconds', ['method', 'endpoint'])
+PAGE_LOAD_TIME = Histogram('page_load_time_seconds', 'Page load time in seconds')
 
 def devops_page(request):
     """Render the DevOps page."""
     page_visit_counter.inc()  # Increment counter here
     return render(request, 'app/devops.html')
 
-
 def metrics(request):
     """Expose Prometheus metrics."""
     with REQUEST_LATENCY.labels(method=request.method, endpoint=request.path).time():
         page_visit_counter.inc()
-    return HttpResponse(generate_latest(registry), content_type="text/plain; charset=utf-8")
+    return HttpResponse(generate_latest(), content_type="text/plain; charset=utf-8")
 
 @csrf_exempt
 def track_page_load(request):
