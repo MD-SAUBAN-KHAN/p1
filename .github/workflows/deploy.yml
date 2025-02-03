@@ -38,8 +38,13 @@ jobs:
 
       - name: Configure Kubeconfig
         run: |
-          echo "${{ secrets.KUBECONFIG }}" | base64 --decode > kubeconfig.yaml
-          export KUBECONFIG=kubeconfig.yaml
+          echo "${{ secrets.KUBECONFIG }}" | base64 --decode > $HOME/.kube/config
+          export KUBECONFIG=$HOME/.kube/config
+
+      - name: Verify Kubernetes Connection
+        run: |
+          kubectl cluster-info
+          kubectl get nodes
 
       - name: Deploy to Kubernetes
         run: |
