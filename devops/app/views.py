@@ -2,6 +2,7 @@ from django.shortcuts import render
 from prometheus_client import generate_latest, Counter, Histogram
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from time import time
 import json
 
 # Define Prometheus metrics using the default registry
@@ -11,14 +12,25 @@ PAGE_LOAD_TIME = Histogram('page_load_time_seconds', 'Page load time in seconds'
 
 def devops_page(request):
     """Render the DevOps page."""
+    start_time = time()  # Start measuring time
+    response = render(request, 'app/devops.html')
+    duration = time() - start_time  # Calculate latency
+
+    REQUEST_LATENCY.labels(method=request.method, endpoint=request.path).observe(duration)
     page_visit_counter.inc()  # Increment counter here
-    return render(request, 'app/devops.html')
+
+    return response
 
 def metrics(request):
     """Expose Prometheus metrics."""
-    with REQUEST_LATENCY.labels(method=request.method, endpoint=request.path).time():
-        page_visit_counter.inc()
-    return HttpResponse(generate_latest(), content_type="text/plain; charset=utf-8")
+    start_time = time()  # Start measuring time for this request
+    response = HttpResponse(generate_latest(), content_type="text/plain; charset=utf-8")
+    duration = time() - start_time  # Calculate latency for this request
+
+    REQUEST_LATENCY.labels(method=request.method, endpoint=request.path).observe(duration)
+    page_visit_counter.inc()  # Increment counter
+
+    return response
 
 @csrf_exempt
 def track_page_load(request):
