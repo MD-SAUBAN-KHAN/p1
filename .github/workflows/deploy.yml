@@ -45,3 +45,4 @@ jobs:
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -k .
+          kubectl rollout restart deployment -n p1 static-webpage-deployment
