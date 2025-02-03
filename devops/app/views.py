@@ -14,21 +14,17 @@ REQUEST_LATENCY = Histogram('request_latency_seconds', 'Request latency in secon
 PAGE_LOAD_TIME = Histogram('page_load_time_seconds', 'Page load time in seconds',registry=registry)
 
 def devops_page(request):
-    """Render the DevOps page."""
-    start_time = time()  # Start measuring time
-    response = render(request, 'app/devops.html')
-    duration = time() - start_time  # Calculate latency
-
-    # Record latency for this request in the histogram
-    REQUEST_LATENCY.labels(method=request.method, endpoint=request.path).observe(duration)
+    """Render the DevOps page."""   
+    response = render(request, 'app/devops.html')    
     page_visit_counter.inc()  # Increment counter here
-
     return response
 
 def metrics(request):
     """Expose Prometheus metrics."""
-    # Directly fetch the metrics here without adding latency tracking again
+    start_time = time()  # Start measuring time
+    duration = time() - start_time  # Calculate latency
     response = HttpResponse(generate_latest(registry), content_type="text/plain; charset=utf-8")
+    REQUEST_LATENCY.labels(method=request.method, endpoint=request.path).observe(duration)
     return response
 
 @csrf_exempt
