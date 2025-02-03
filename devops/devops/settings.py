@@ -53,7 +53,7 @@ MIDDLEWARE = [
     'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django_prometheus.middleware.PrometheusAfterMiddleware'
 ]
-
+PROMETHEUS_METRICS = True  # Enable the /metrics endpoint
 ROOT_URLCONF = 'devops.urls'
 
 TEMPLATES = [
