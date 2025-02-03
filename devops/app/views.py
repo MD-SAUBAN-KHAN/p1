@@ -15,18 +15,21 @@ PAGE_LOAD_TIME = Histogram('page_load_time_seconds', 'Page load time in seconds'
 
 def devops_page(request):
     """Render the DevOps page."""
-    start_time = time()  # Start measuring time
+    
     response = render(request, 'app/devops.html')
-    duration = time() - start_time  # Calculate latency
+    
 
-    REQUEST_LATENCY.labels(method=request.method, endpoint=request.path).observe(duration)
+    
     page_visit_counter.inc()  # Increment counter here
 
     return response
 
 def metrics(request):
     """Expose Prometheus metrics."""
+    start_time = time()  # Start measuring time
     response = HttpResponse(generate_latest(), content_type="text/plain; charset=utf-8")
+    duration = time() - start_time  # Calculate latency
+    REQUEST_LATENCY.labels(method=request.method, endpoint=request.path).observe(duration)
     #with REQUEST_LATENCY.labels(method=request.method, endpoint=request.path).time():
     #    page_visit_counter.inc()
     return response
