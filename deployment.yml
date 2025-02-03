@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: static-webpage
-          image: mdsk2001/k8s-p1:v3
+          image: mdsk2001/k8s-p1:latest
           ports:
             - containerPort: 8000
 
