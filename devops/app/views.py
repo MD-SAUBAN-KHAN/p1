@@ -16,7 +16,7 @@ def devops_page(request):
     response = render(request, 'app/devops.html')
     duration = time() - start_time  # Calculate latency
 
-    # Record the latency only for this request
+    # Record latency for this request in the histogram
     REQUEST_LATENCY.labels(method=request.method, endpoint=request.path).observe(duration)
     page_visit_counter.inc()  # Increment counter here
 
@@ -24,9 +24,8 @@ def devops_page(request):
 
 def metrics(request):
     """Expose Prometheus metrics."""
-    # No need to measure latency again here, it's already done in the devops_page function
+    # Directly fetch the metrics here without adding latency tracking again
     response = HttpResponse(generate_latest(), content_type="text/plain; charset=utf-8")
-
     return response
 
 @csrf_exempt
