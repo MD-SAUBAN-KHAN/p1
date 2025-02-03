@@ -18,6 +18,7 @@ spec:
       containers:
         - name: static-webpage
           image: mdsk2001/k8s-p1:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
 
