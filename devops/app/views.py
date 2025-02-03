@@ -6,12 +6,12 @@ from time import time
 import json
 
 # Create a global registry and metrics
-registry = CollectorRegistry()
+#registry = CollectorRegistry()
 
 # Use custom metrics
-page_visit_counter = Counter('page_visits_total', 'Total number of page visits',registry=registry)
-REQUEST_LATENCY = Histogram('request_latency_seconds', 'Request latency in seconds', ['method', 'endpoint'],registry=registry)
-PAGE_LOAD_TIME = Histogram('page_load_time_seconds', 'Page load time in seconds',registry=registry)
+page_visit_counter = Counter('page_visits_total', 'Total number of page visits')
+REQUEST_LATENCY = Histogram('request_latency_seconds', 'Request latency in seconds', ['method', 'endpoint'])
+PAGE_LOAD_TIME = Histogram('page_load_time_seconds', 'Page load time in seconds')
 
 def devops_page(request):
     """Render the DevOps page."""   
@@ -23,7 +23,7 @@ def metrics(request):
     """Expose Prometheus metrics."""
     start_time = time()  # Start measuring time
     duration = time() - start_time  # Calculate latency
-    response = HttpResponse(generate_latest(registry), content_type="text/plain; charset=utf-8")
+    response = HttpResponse(generate_latest(), content_type="text/plain; charset=utf-8")
     REQUEST_LATENCY.labels(method=request.method, endpoint=request.path).observe(duration)
     return response
 
