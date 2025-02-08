@@ -4,19 +4,26 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from time import time
 import json
+import os
 
 # Create a specific registry for our metrics
 registry = CollectorRegistry()
 
-# Use custom metrics with specific registry
-page_visit_counter = Counter('page_visits_total', 'Total number of page visits', registry=registry)
-REQUEST_LATENCY = Histogram('request_latency_seconds', 'Request latency in seconds', ['method', 'endpoint'], registry=registry)
-PAGE_LOAD_TIME = Histogram('page_load_time_seconds', 'Page load time in seconds', registry=registry)
+# Get pod name from environment variable
+pod_name = os.environ.get('HOSTNAME', 'unknown')
+
+# Use custom metrics with specific registry and instance labels
+page_visit_counter = Counter('page_visits_total', 'Total number of page visits',
+                           ['instance'], registry=registry)
+REQUEST_LATENCY = Histogram('request_latency_seconds', 'Request latency in seconds',
+                          ['method', 'endpoint', 'instance'], registry=registry)
+PAGE_LOAD_TIME = Histogram('page_load_time_seconds', 'Page load time in seconds',
+                         ['instance'], registry=registry)
 
 def devops_page(request):
     """Render the DevOps page."""
     response = render(request, 'app/devops.html')
-    page_visit_counter.inc()
+    page_visit_counter.labels(instance=pod_name).inc()
     return response
 
 def metrics(request):
@@ -24,7 +31,11 @@ def metrics(request):
     start_time = time()
     response = HttpResponse(generate_latest(registry), content_type="text/plain; charset=utf-8")
     duration = time() - start_time
-    REQUEST_LATENCY.labels(method=request.method, endpoint=request.path).observe(duration)
+    REQUEST_LATENCY.labels(
+        method=request.method,
+        endpoint=request.path,
+        instance=pod_name
+    ).observe(duration)
     return response
 
 @csrf_exempt
@@ -34,7 +45,7 @@ def track_page_load(request):
         try:
             data = json.loads(request.body)
             load_time = data.get('load_time', 0) / 1000  # Convert ms to seconds
-            PAGE_LOAD_TIME.observe(load_time)
+            PAGE_LOAD_TIME.labels(instance=pod_name).observe(load_time)
             return JsonResponse({'status': 'success', 'message': 'Page load time recorded'})
         except (ValueError, KeyError):
             return JsonResponse({'status': 'error', 'message': 'Invalid data'}, status=400)
