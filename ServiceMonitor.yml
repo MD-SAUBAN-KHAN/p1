@@ -13,7 +13,13 @@ spec:
     - port: http
       path: /metrics
       interval: 15s
+      relabelings:
+        - sourceLabels: [__meta_kubernetes_pod_name]
+          action: replace
+          targetLabel: pod
+        - sourceLabels: [__meta_kubernetes_namespace]
+          action: replace
+          targetLabel: namespace
   namespaceSelector:
     matchNames:
       - p1
-
