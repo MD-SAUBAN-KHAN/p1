@@ -8,16 +8,16 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: static-webpage
+      app: static-webpage  
   endpoints:
-    - port: http
+    - port: http 
       path: /metrics
       interval: 15s
       relabelings:
-        - sourceLabels: [__meta_kubernetes_pod_labels_app]
+        - sourceLabels: [app] 
           action: replace
           targetLabel: app
-        - sourceLabels: [__meta_kubernetes_namespace]
+        - sourceLabels: [namespace]
           action: replace
           targetLabel: namespace
   namespaceSelector:
