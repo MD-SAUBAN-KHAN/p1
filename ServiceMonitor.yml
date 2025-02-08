@@ -14,9 +14,9 @@ spec:
       path: /metrics
       interval: 15s
       relabelings:
-        - sourceLabels: [__meta_kubernetes_pod_name]
+        - sourceLabels: [__meta_kubernetes_pod_labels_app]
           action: replace
-          targetLabel: pod
+          targetLabel: app
         - sourceLabels: [__meta_kubernetes_namespace]
           action: replace
           targetLabel: namespace
