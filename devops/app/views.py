@@ -9,21 +9,21 @@ import os
 # Create a specific registry for our metrics
 registry = CollectorRegistry()
 
-# Get pod name from environment variable
-pod_name = os.environ.get('HOSTNAME', 'unknown')
+# Use deployment name as a stable identifier
+app_name = "static-webpage"
 
-# Use custom metrics with specific registry and instance labels
+# Use custom metrics with specific registry and stable labels
 page_visit_counter = Counter('page_visits_total', 'Total number of page visits',
-                           ['instance'], registry=registry)
+                           ['app'], registry=registry)
 REQUEST_LATENCY = Histogram('request_latency_seconds', 'Request latency in seconds',
-                          ['method', 'endpoint', 'instance'], registry=registry)
+                          ['method', 'endpoint', 'app'], registry=registry)
 PAGE_LOAD_TIME = Histogram('page_load_time_seconds', 'Page load time in seconds',
-                         ['instance'], registry=registry)
+                         ['app'], registry=registry)
 
 def devops_page(request):
     """Render the DevOps page."""
     response = render(request, 'app/devops.html')
-    page_visit_counter.labels(instance=pod_name).inc()
+    page_visit_counter.labels(app=app_name).inc()
     return response
 
 def metrics(request):
@@ -34,7 +34,7 @@ def metrics(request):
     REQUEST_LATENCY.labels(
         method=request.method,
         endpoint=request.path,
-        instance=pod_name
+        app=app_name
     ).observe(duration)
     return response
 
@@ -45,7 +45,7 @@ def track_page_load(request):
         try:
             data = json.loads(request.body)
             load_time = data.get('load_time', 0) / 1000  # Convert ms to seconds
-            PAGE_LOAD_TIME.labels(instance=pod_name).observe(load_time)
+            PAGE_LOAD_TIME.labels(app=app_name).observe(load_time)
             return JsonResponse({'status': 'success', 'message': 'Page load time recorded'})
         except (ValueError, KeyError):
             return JsonResponse({'status': 'error', 'message': 'Invalid data'}, status=400)
