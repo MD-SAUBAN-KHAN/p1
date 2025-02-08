@@ -37,6 +37,10 @@ def metrics(request):
     response = HttpResponse(generate_latest(), content_type="text/plain; charset=utf-8")
     return response
 
+import logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
 @csrf_exempt
 def track_page_load(request):
     """Track page load time from JavaScript POST requests."""
@@ -44,7 +48,8 @@ def track_page_load(request):
         try:
             data = json.loads(request.body)
             load_time = data.get('load_time', 0) / 1000  # Convert ms to seconds
-            PAGE_LOAD_TIME.labels(app=app_name).observe(load_time)
+            logger.debug(f"Received load time: {load_time}")
+            PAGE_LOAD_TIME.labels(app=app_name, pod=os.getenv("HOSTNAME", "unknown")).observe(load_time)
             return JsonResponse({'status': 'success', 'message': 'Page load time recorded'})
         except (ValueError, KeyError):
             return JsonResponse({'status': 'error', 'message': 'Invalid data'}, status=400)
