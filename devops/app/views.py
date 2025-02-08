@@ -4,46 +4,37 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from time import time
 import json
-import os
 
-# Use the default registry instead of a custom one to ensure metrics persistence
-# Remove the custom registry creation since we'll use the default REGISTRY
-
-# Use deployment name as a stable identifier
+# Unique application name for metric labels
 app_name = "static-webpage"
 
-# Define metrics using default registry
-page_visit_counter = Counter('page_visits_total', 'Total number of page visits',
-                           ['app'])
-REQUEST_LATENCY = Histogram('request_latency_seconds', 'Request latency in seconds',
-                          ['method', 'endpoint', 'app'])
-PAGE_LOAD_TIME = Histogram('page_load_time_seconds', 'Page load time in seconds',
-                         ['app'])
+# Check if metrics already exist in REGISTRY to avoid duplication
+if "page_visits_total" not in REGISTRY._names_to_collectors:
+    page_visit_counter = Counter('page_visits_total', 'Total number of page visits', ['app'])
+    REQUEST_LATENCY = Histogram('request_latency_seconds', 'Request latency in seconds', ['method', 'endpoint', 'app'])
+    PAGE_LOAD_TIME = Histogram('page_load_time_seconds', 'Page load time in seconds', ['app'])
+else:
+    page_visit_counter = REGISTRY._names_to_collectors["page_visits_total"]
+    REQUEST_LATENCY = REGISTRY._names_to_collectors["request_latency_seconds"]
+    PAGE_LOAD_TIME = REGISTRY._names_to_collectors["page_load_time_seconds"]
 
 def devops_page(request):
     """Render the DevOps page."""
     start_time = time()
     response = render(request, 'app/devops.html')
+
+    # Increment page visit counter
     page_visit_counter.labels(app=app_name).inc()
+
+    # Measure request latency
     duration = time() - start_time
-    REQUEST_LATENCY.labels(
-        method=request.method,
-        endpoint=request.path,
-        app=app_name
-    ).observe(duration)
+    REQUEST_LATENCY.labels(method=request.method, endpoint=request.path, app=app_name).observe(duration)
+
     return response
 
 def metrics(request):
     """Expose Prometheus metrics."""
-    start_time = time()
-    # Use the default REGISTRY instead of custom registry
-    response = HttpResponse(generate_latest(REGISTRY), content_type="text/plain; charset=utf-8")
-    duration = time() - start_time
-    REQUEST_LATENCY.labels(
-        method=request.method,
-        endpoint=request.path,
-        app=app_name
-    ).observe(duration)
+    response = HttpResponse(generate_latest(), content_type="text/plain; charset=utf-8")
     return response
 
 @csrf_exempt
